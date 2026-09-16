@@ -6,32 +6,37 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     container_name: url-shortener-backend
+    restart: unless-stopped
+    env_file:
+      - .env
     ports:
       - "8000:8000"
-    environment:
-      - DATABASE_URL=sqlite:///./urls.db
-      - CORS_ORIGINS=http://localhost:3000
     volumes:
-      - backend_data:/app/data
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+      - db-data:/data   # persists SQLite file
+    depends_on:
+      - db
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
     container_name: url-shortener-frontend
+    restart: unless-stopped
+    env_file:
+      - .env
     ports:
       - "3000:3000"
-    environment:
-      - NEXT_PUBLIC_API_URL=http://localhost:8000
     depends_on:
       - backend
-    restart: unless-stopped
+
+  # SQLite does not need a separate service, but we expose a tiny
+  # helper container to keep the volume alive and allow manual inspection.
+  db:
+    image: alpine
+    container_name: url-shortener-db
+    command: ["tail", "-f", "/dev/null"]
+    volumes:
+      - db-data:/data
 
 volumes:
-  backend_data:
+  db-data:
