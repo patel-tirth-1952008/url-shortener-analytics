@@ -1,6 +1,12 @@
 # URL Shortener with Analytics
 
 ## Overview
-A Bitly‑style URL shortener that generates short links, redirects users, and records click‑through analytics (timestamp, IP, user‑agent, referrer). The backend is built with **FastAPI** and stores data in **SQLite**. The frontend is a **Next.js** single‑page app that lets users create short URLs and view analytics dashboards.
+A Bitly-style system for shortening URLs and tracking click analytics. This project features a high-performance FastAPI backend for URL generation and redirect handling, and a modern Next.js frontend for user interaction and analytics visualization.
 
-## Architecture
+## Tech Stack
+- **Backend**: FastAPI, SQLite
+- **Frontend**: Next.js
+- **Infrastructure**: Docker, Docker Compose
+
+## Quick Start
+Ensure Docker and Docker Compose are installed on your machine.
