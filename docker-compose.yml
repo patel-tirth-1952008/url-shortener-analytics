@@ -6,37 +6,27 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     container_name: url-shortener-backend
-    restart: unless-stopped
-    env_file:
-      - .env
     ports:
       - "8000:8000"
     volumes:
-      - db-data:/data   # persists SQLite file
-    depends_on:
-      - db
+      - ./backend:/app
+      - sqlite_data:/app/data
+    environment:
+      - DATABASE_URL=sqlite:////app/data/app.db
+    restart: unless-stopped
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
     container_name: url-shortener-frontend
-    restart: unless-stopped
-    env_file:
-      - .env
     ports:
       - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
     depends_on:
       - backend
-
-  # SQLite does not need a separate service, but we expose a tiny
-  # helper container to keep the volume alive and allow manual inspection.
-  db:
-    image: alpine
-    container_name: url-shortener-db
-    command: ["tail", "-f", "/dev/null"]
-    volumes:
-      - db-data:/data
+    restart: unless-stopped
 
 volumes:
-  db-data:
+  sqlite_data:
